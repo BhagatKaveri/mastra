@@ -1,0 +1,48 @@
+generator client {
+provider = "prisma-client-js"
+}
+
+
+datasource db {
+provider = "postgresql"
+url = env("DATABASE_URL")
+}
+
+
+model Document {
+id Int @id @default(autoincrement())
+title String?
+filename String?
+year Int?
+sourceUrl String? @map("source_url")
+chunks Chunk[]
+createdAt DateTime @default(now()) @map("created_at")
+}
+
+
+model Chunk {
+id Int @id @default(autoincrement())
+document Document @relation(fields: [documentId], references: [id])
+documentId Int
+chunkText String @map("chunk_text")
+chunkMeta Json? @map("chunk_meta")
+createdAt DateTime @default(now()) @map("created_at")
+}
+
+
+model Conversation {
+id Int @id @default(autoincrement())
+title String?
+messages Message[]
+createdAt DateTime @default(now()) @map("created_at")
+}
+
+
+model Message {
+id Int @id @default(autoincrement())
+conversation Conversation @relation(fields: [conversationId], references: [id])
+conversationId Int
+role String
+content String
+createdAt DateTime @default(now()) @map("created_at")
+}
